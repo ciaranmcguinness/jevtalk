@@ -1,4 +1,4 @@
-from typesafe_sdk import Choice, TypeSafeClient, Noul
+from typesafe_sdk import Choice, TypeSafeClient, Noul, ChoiceAnswer, NoulAnswer
 from agents import function_tool, Agent, Runner, run_demo_loop, set_tracing_disabled, ModelSettings
 from openai.types.shared import Reasoning
 from agents.extensions.models.any_llm_provider import AnyLLMProvider
@@ -38,26 +38,22 @@ def run(inp, update, conf: Config):
     agent = Agent("JevTalker", instructions="Write a list of options for the next word in the AI's message (up to ~20). Do not write more than one word per option. The AI is somewhat prone to looping, so steer away from things that have been said already. Do not allow the AI to respond as the user.", model=p.get_model("openrouter/openai/gpt-6-luna"), output_type=list[str], model_settings=ModelSettings(reasoning=Reasoning(effort="medium")))
     with TypeSafeClient(api_key=conf.typesafe_key,base_url=conf.typesafe_base) as typesafe:
         while True:
-            #print("oai")
             choices = (r.run_sync(agent, str(convo))).final_output
-            #print("endoai")
             if choices == []:
                 break
-            #print(choices)
-            #print("jev")
             nxt = typesafe.system_one(convo,{"next_token":Choice(criteria={k:"" for k in choices}, instructions="Pick the most likely next token for the AI to say in the conversation.")})
-            #print("endjev")
-            #print(nxt.answers["stop"].noul)
+            assert isinstance(nxt.answers["next_token"],ChoiceAnswer)
             nxttoken = nxt.answers["next_token"].choice
             sp = " "
             if nxttoken in [",",".","?","!"]:
                 sp = ""
             convo[-1]["content"]+= (nxttoken + sp)
-            #print(convo)
             update(nxttoken)
             wc = len(convo[-1]["content"].split(" ")) - 1
             if (wc > 3):
-                stop_prob = typesafe.system_one({"message":convo[-2]["content"],"response":convo[-1]["content"]}, {"end":Noul(instructions="Should the response end here?")}).answers["end"].noul
+                stop_req = typesafe.system_one({"message":convo[-2]["content"],"response":convo[-1]["content"]}, {"end":Noul(instructions="Should the response end here?")}).answers
+                assert isinstance(stop_req["end"], NoulAnswer)
+                stop_prob = stop_req["end"].noul
                 stop_prob *= max(wc/8, min(wc/5, 1.25))
                 if stop_prob > 0.5:
                     break
