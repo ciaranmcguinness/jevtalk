@@ -29,5 +29,5 @@ def handle_message(data):
 def handle_disconnect():
     conversations.pop(request.sid, None)
 
-if __name__ == '__main__':
-    sio.run(app, debug=True)
+def run_web():
+    sio.run(app)
