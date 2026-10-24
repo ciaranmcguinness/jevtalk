@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask WebSocket Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        // Listen for messages from server
+        socket.on("message", function(data) {
+            var messages = document.getElementById("messages");
+            console.log(data)
+            messages.lastElementChild.innerHTML += `${data}`;
+        });
+        socket.on("done", function (data){
+            var bttn = document.getElementById("sendbutton");
+            bttn.disabled = false;
+            bttn.innerText = "Send";
+        })
+
+        // Function to send messages
+        function sendMessage() {
+            var bttn = document.getElementById("sendbutton");
+            bttn.disabled = true;
+            bttn.innerText = "Responding...";
+            var messages = document.getElementById("messages");
+            var msgInput = document.getElementById("msg");
+            var message = msgInput.value;
+            socket.send(message);
+            msgInput.value = "";
+            var said = document.createElement("div");
+            said.innerHTML = `You said: ${message}`
+            messages.appendChild(said);
+            resp = document.createElement("div")
+            resp.innerHTML = "Jev said:"
+            messages.appendChild(resp);
+        }
+    </script>
+</head>
+<body>
+    <h2>JevTalk</h2>
+    <input id="msg" type="text" placeholder="Enter your message">
+    <button onclick="sendMessage()" id="sendbutton">Send</button>
+    <div id="messages"></div>
+</body>
+</html>
