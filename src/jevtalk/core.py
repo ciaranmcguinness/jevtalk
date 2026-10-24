@@ -7,7 +7,6 @@ from os import getenv
 from dataclasses import dataclass
 from copy import deepcopy
 
-
 @dataclass
 class Config():
     oai_base: str
@@ -80,3 +79,15 @@ def run(inp: list[dict[str,str]], update, conf: Config):
         state.append({"role":"assistant","content":f"The AI picked \"{nxt}\" as the next token."})
 
     return convo
+
+def cli():
+    try:
+        conf = get_keys()
+        convo = []
+        while True:
+            convo.append({"role":"user", "content":input(">")})
+            convo.append({"role":"AI","content":""})
+            convo = run(convo, lambda x: print(x, end=" ", flush=True), conf)
+            print()
+    except KeyboardInterrupt:
+        print("\nExiting...")
