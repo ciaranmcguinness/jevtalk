@@ -1,5 +1,5 @@
 from typesafe_sdk import Choice, TypeSafeClient, Noul, ChoiceAnswer, NoulAnswer
-from agents import TResponseInputItem, function_tool, Agent, Runner, run_demo_loop, set_tracing_export_api_key, ModelSettings
+from agents import TResponseInputItem, Agent, Runner, ModelSettings, set_tracing_export_api_key, set_tracing_disabled
 from openai.types.shared import Reasoning
 from agents.extensions.models.any_llm_provider import AnyLLMProvider
 from dotenv import load_dotenv
@@ -14,7 +14,6 @@ class Config():
     oai_key: str
     typesafe_base: str
     typesafe_key: str
-    
 
 def get_keys():
     load_dotenv()
@@ -30,6 +29,14 @@ def get_keys():
     typesafe_key = getenv("TYPESAFE_API_KEY")
     if typesafe_key == None:
         typesafe_key = input("Enter your Typesafe (or compatible) key: ")
+    oai_trace_key = getenv("OAI_TRACE_KEY")
+    if oai_trace_key == None:
+        if oai_base == "https://api.openai.com/v1":
+            oai_trace_key = oai_key
+    if oai_trace_key != None:
+        set_tracing_export_api_key(oai_trace_key)
+    else:
+        set_tracing_disabled(True)
     return Config(oai_base,oai_key,typesafe_base,typesafe_key)
 
 def get_jev_choice_and_quit(choices: list[str], convo, conf: Config):
