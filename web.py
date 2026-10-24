@@ -30,4 +30,4 @@ def handle_disconnect():
     conversations.pop(request.sid, None)
 
 if __name__ == '__main__':
-    sio.run(sio, debug=True)
+    sio.run(app, debug=True)
