@@ -20,7 +20,7 @@ def index():
 def handle_message(data):
     f = (lambda x: send(x,to=request.sid))
     conversations[request.sid] = conversations.get(request.sid, [])
-    conversations[request.sid].sioend({"role":"user","content":str(data)})
+    conversations[request.sid].append({"role":"user","content":str(data)})
     conversations[request.sid] = run(conversations[request.sid], f, keys)
     emit("done",to=request.sid)
 

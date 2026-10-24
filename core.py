@@ -1,5 +1,5 @@
 from typesafe_sdk import Choice, TypeSafeClient, Noul, ChoiceAnswer, NoulAnswer
-from agents import function_tool, Agent, Runner, run_demo_loop, set_tracing_export_api_key, ModelSettings
+from agents import TResponseInputItem, function_tool, Agent, Runner, run_demo_loop, set_tracing_export_api_key, ModelSettings
 from openai.types.shared import Reasoning
 from agents.extensions.models.any_llm_provider import AnyLLMProvider
 from dotenv import dotenv_values
@@ -56,9 +56,9 @@ def run(inp: list[dict[str,str]], update, conf: Config):
     r = Runner()
     p = AnyLLMProvider(api_key=conf.oai_key,base_url=conf.oai_base,api="chat_completions")
     agent = Agent("JevTalker", instructions="Write a list of options for the next word in the AI's message (up to ~50), the words should provide a wide palet for the AI, focus more on providing options with different meanings rather than providing multiple ways to say the same thing. The AI is not able to write its own punctuation, so you'll need to provide it. Do not write more than one word per option. The AI is somewhat prone to looping, so steer away from things that have been said already. Prevent the AI to respond as the user, it it is responding as the user, steer it away from that.", model=p.get_model("openrouter/openai/gpt-6-luna"), output_type=list[str], model_settings=ModelSettings(reasoning=Reasoning(effort="medium")))
-    state = [{"role":"user","content":f"The following is the conversation's starting context:{convo}"}]
+    state: list[TResponseInputItem] = [{"role":"user","content":f"The following is the conversation's starting context:{convo}"}]
     while True:
-        resp = (r.run_sync(agent, state)) 
+        resp = (r.run_sync(agent, state))
         choices = resp.final_output + ["!"]
         state = resp.to_input_list()
         print(state)
