@@ -7,10 +7,7 @@ def main():
         ans = input("Cli or WebUI? ").lower().strip()[0]
         if ans not in ["c","w"]:
             ans = None
-    try:
-        if ans == "c":
-            cli()
-        else:
-            run_web()
-    except KeyboardInterrupt:
-        print("\nExiting...")
+    if ans == "c":
+        cli()
+    else:
+        run_web()

@@ -81,10 +81,13 @@ def run(inp: list[dict[str,str]], update, conf: Config):
     return convo
 
 def cli():
-    conf = get_keys()
-    convo = []
-    while True:
-        convo.append({"role":"user", "content":input(">")})
-        convo.append({"role":"AI","content":""})
-        convo = run(convo, lambda x: print(x, end=" ", flush=True), conf)
-        print()
+    try:
+        conf = get_keys()
+        convo = []
+        while True:
+            convo.append({"role":"user", "content":input(">")})
+            convo.append({"role":"AI","content":""})
+            convo = run(convo, lambda x: print(x, end=" ", flush=True), conf)
+            print()
+    except KeyboardInterrupt:
+        print("\nExiting...")
