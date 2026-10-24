@@ -16,7 +16,7 @@ dependencies = [
 jevtalk = "jevtalk:main"
 
 [tool.vercel]
-entrypoint = "web:app"
+entrypoint = "jevtalk:app"
 
 
 [build-system]
