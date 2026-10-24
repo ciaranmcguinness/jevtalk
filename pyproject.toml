@@ -9,9 +9,8 @@ dependencies = [
     "flask-socketio>=5.7.0",
     "openai-agents[any-llm]>=0.23.1",
     "python-dotenv>=1.2.4",
-    "sqlalchemy>=2.1.4",
     "typesafe-sdk>=0.7.2",
 ]
 
 [tool.vercel]
-entrypoint = "web:sio"
+entrypoint = "web:app"
