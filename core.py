@@ -2,7 +2,8 @@ from typesafe_sdk import Choice, TypeSafeClient, Noul, ChoiceAnswer, NoulAnswer
 from agents import TResponseInputItem, function_tool, Agent, Runner, run_demo_loop, set_tracing_export_api_key, ModelSettings
 from openai.types.shared import Reasoning
 from agents.extensions.models.any_llm_provider import AnyLLMProvider
-from dotenv import dotenv_values
+from dotenv import load_dotenv
+from os import getenv
 from dataclasses import dataclass
 from copy import deepcopy
 
@@ -16,17 +17,17 @@ class Config():
     
 
 def get_keys():
-    env = dotenv_values()
-    oai_base = env.get("OPENAI_BASE_URL")
+    load_dotenv()
+    oai_base = getenv("OPENAI_BASE_URL")
     if oai_base == None:
         oai_base = "https://api.openai.com/v1"
-    typesafe_base = env.get("TYPESAFE_BASE_URL")
+    typesafe_base = getenv("TYPESAFE_BASE_URL")
     if typesafe_base == None:
         typesafe_base = "https://api.typesafe.ai/v1"
-    oai_key = env.get("OPENAI_API_KEY")
+    oai_key = getenv("OPENAI_API_KEY")
     if oai_key == None:
         oai_key = input("Enter your OpenAI (or compatible) key: ")
-    typesafe_key = env.get("TYPESAFE_API_KEY")
+    typesafe_key = getenv("TYPESAFE_API_KEY")
     if typesafe_key == None:
         typesafe_key = input("Enter your Typesafe (or compatible) key: ")
     return Config(oai_base,oai_key,typesafe_base,typesafe_key)
